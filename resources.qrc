@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/">
+    <file>icons/go-down.png</file>
+    <file>icons/dialog-close.png</file>
+    <file>icons/download-later.png</file>
+    <file>icons/dialog-ok-apply.png</file>
+    </qresource>
+</RCC>
