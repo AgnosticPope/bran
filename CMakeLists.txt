@@ -7,7 +7,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-add_definitions(-std=c++11)
+if(NOT MSVC)
+	add_definitions(-std=c++11)
+endif()
 
 find_package(Qt5WebEngineWidgets REQUIRED)
 
