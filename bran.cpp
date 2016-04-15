@@ -8,7 +8,7 @@
 
 int main(int argc, char **argv)
 {
-	QApplication app(argc, argv);
+	QApplication *app = new QApplication(argc, argv);
 
 	QCommandLineParser parser;
 	parser.addOptions({
@@ -45,30 +45,30 @@ int main(int argc, char **argv)
 	});
 	parser.addHelpOption();
 	parser.addPositionalArgument("url", "Open url", "[url]");
-	parser.process(app);
+	parser.process(app->arguments());
 
 	if (parser.isSet("inspector-port")) {
 		qputenv("QTWEBENGINE_REMOTE_DEBUGGING",
 				parser.value("inspector-port").toLocal8Bit());
 	}
 
-	RequestInterceptor interceptor;
-	interceptor.setAllowFonts(parser.isSet("allow-fonts"));
+	RequestInterceptor *interceptor = new RequestInterceptor();
+	interceptor->setAllowFonts(parser.isSet("allow-fonts"));
 	if (parser.isSet("block-hosts")) {
-		if (!interceptor.loadHostBlacklist(parser.value("block-hosts"))) {
+		if (!interceptor->loadHostBlacklist(parser.value("block-hosts"))) {
 			qWarning() << "Unable to open file" << parser.values("block-hosts");
 			return -1;
 		}
 	}
 	if (parser.isSet("log-requests")) {
-		interceptor.setLogFile(parser.value("log-requests"));
+		interceptor->setLogFile(parser.value("log-requests"));
 	}
 
 	// We don't want to use the default profile, create our own off
 	// the record profile
 	QWebEngineProfile *profile = new QWebEngineProfile();
 	Q_ASSERT(profile->isOffTheRecord());
-	profile->setRequestInterceptor(&interceptor);
+	profile->setRequestInterceptor(interceptor);
 
 	QWebEngineSettings *settings = profile->settings();
 	settings->setAttribute(QWebEngineSettings::AutoLoadImages, !parser.isSet("no-images"));
@@ -79,12 +79,6 @@ int main(int argc, char **argv)
 	settings->setAttribute(QWebEngineSettings::HyperlinkAuditingEnabled, false);
 	settings->setAttribute(QWebEngineSettings::PluginsEnabled, false);
 	settings->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, false);
-
-	if (parser.isSet("user-agent")) {
-		profile->setHttpUserAgent(parser.value("user-agent"));
-	} else {
-		profile->setHttpUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36");
-	}
 
 	CookieJar jar(profile->cookieStore());
 	if (parser.isSet("cookies")) {
@@ -120,7 +114,14 @@ int main(int argc, char **argv)
 	if (!parser.positionalArguments().isEmpty()) {
 		window->loadUrl(QUrl::fromUserInput(parser.positionalArguments().at(0)));
 	}
-	int rc = app.exec();
+
+	if (parser.isSet("user-agent")) {
+		profile->setHttpUserAgent(parser.value("user-agent"));
+	} else {
+		profile->setHttpUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36");
+	}
+
+	int rc = app->exec();
 
 	if (parser.isSet("save-cookies")) {
 		if (!jar.saveAs(parser.value("save-cookies"))) {
