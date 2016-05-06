@@ -1,16 +1,16 @@
 #include "browser.h"
 
 #include <QVBoxLayout>
-#include <QLabel>
 #include <QProgressBar>
 #include <QDebug>
+#include "location.h"
 
 Browser::Browser(QWebEngineProfile *profile, QWidget *parent)
 :QWidget(parent)
 {
 	m_view = new View(profile, this);
 	m_view->setCertificateErrorHandler(this);
-	m_urlLabel = new QLabel(this);
+	m_location = new Location(this);
 
 	m_progress = new QProgressBar(this);
 	m_progress->setRange(0, 100);
@@ -21,7 +21,7 @@ Browser::Browser(QWebEngineProfile *profile, QWidget *parent)
 	m_certificate_error->hide();
 
 	QVBoxLayout *layout = new QVBoxLayout();
-	layout->addWidget(m_urlLabel);
+	layout->addWidget(m_location);
 	layout->addWidget(m_progress);
 	layout->addWidget(m_certificate_error);
 	layout->addWidget(m_view);
@@ -38,7 +38,7 @@ Browser::Browser(QWebEngineProfile *profile, QWidget *parent)
 	connect(m_view, &View::loadFinished,
 			this, &Browser::loadFinished);
 	connect(m_view, &View::linkHovered,
-			this, &Browser::linkHovered);
+			m_location, &Location::setNext);
 }
 
 void Browser::load(const QUrl& url)
@@ -49,7 +49,7 @@ void Browser::load(const QUrl& url)
 
 void Browser::urlChanged(const QUrl& url)
 {
-	m_urlLabel->setText(url.toString());
+	m_location->setLocation(url.toString());
 }
 
 void Browser::loadStarted()
@@ -75,7 +75,7 @@ QUrl Browser::url() const
 bool Browser::handleCertificateError(const QWebEngineCertificateError& err)
 {
 	m_view->hide();
-	m_urlLabel->hide();
+	m_location->hide();
 	m_certificate_error->show();
 	m_certificate_error->setIgnoreable(err.isOverridable());
 	m_certificate_error->setMessage(err.errorDescription());
@@ -96,17 +96,9 @@ bool Browser::handleCertificateError(const QWebEngineCertificateError& err)
 	loop.exec();
 
 	m_view->show();
-	m_urlLabel->show();
+	m_location->show();
 	m_certificate_error->hide();
 
 	return result;
 }
 
-void Browser::linkHovered(const QString& url)
-{
-	if (url.isEmpty()) {
-		m_urlLabel->setText(m_view->url().toString());
-	} else {
-		m_urlLabel->setText(url);
-	}
-}

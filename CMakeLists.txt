@@ -16,7 +16,7 @@ find_package(Qt5WebEngineWidgets REQUIRED)
 add_executable(bran WIN32 bran.cpp requestinterceptor.cpp
 	cookiejar.cpp view.cpp page.cpp browser.cpp downloadmanager.cpp
 	dashboard.cpp mainwindow.cpp certificateerror.ui certificateerrorwidget.cpp
-	resources.qrc)
+	location.cpp resources.qrc)
 target_link_libraries(bran Qt5::WebEngineWidgets)
 
 if(WIN32 AND NOT CMAKE_CROSSCOMPILING)

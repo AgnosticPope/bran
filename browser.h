@@ -4,7 +4,7 @@
 #include "view.h"
 #include "certificateerrorwidget.h"
 
-class QLabel;
+class Location;
 class QProgressBar;
 class Browser: public QWidget, public CertificateErrorHandler
 {
@@ -20,11 +20,10 @@ protected slots:
 	void urlChanged(const QUrl& url);
 	void loadStarted();
 	void loadFinished(bool ok);
-	void linkHovered(const QString& url);
 signals:
 	void loadRequested(const QUrl& url);
 private:
-	QLabel *m_urlLabel;
+	Location *m_location;
 	QProgressBar *m_progress;
 	View *m_view;
 	CertificateErrorWidget *m_certificate_error;
