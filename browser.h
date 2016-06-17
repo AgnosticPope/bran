@@ -14,6 +14,7 @@ public:
 	void setDefaultZoom(qreal zoomFactor);
 	QUrl url() const;
 	virtual bool handleCertificateError(const QWebEngineCertificateError& err);
+	QWebEngineHistory* history();
 public slots:
 	void load(const QUrl& url);
 protected slots:

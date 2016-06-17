@@ -10,7 +10,7 @@ const int MODE_DOWNLOADS = 2;
 MainWindow::MainWindow(Browser *browser, QWidget *parent)
 :QStackedWidget(parent), m_browser(browser)
 {
-	m_dashboard = new Dashboard(this);
+	m_dashboard = new Dashboard(m_browser->history(), this);
 	m_downloads = new QListView(this);
 	connect(m_downloads, &QListView::activated,
 			this, &MainWindow::downloadActivated);
@@ -51,6 +51,9 @@ void MainWindow::dashboardMode()
 	setCurrentIndex(MODE_DASHBOARD);
 	m_dashboard->setInput(m_browser->url().toString());
 	m_dashboard->selectInput();
+	// Reset the view AFTER setting the text and skip the
+	// filter
+	m_dashboard->resetView();
 }
 void MainWindow::loadUrl(const QUrl& url)
 {

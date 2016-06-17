@@ -41,6 +41,11 @@ Browser::Browser(QWebEngineProfile *profile, QWidget *parent)
 			m_location, &Location::setNext);
 }
 
+QWebEngineHistory* Browser::history()
+{
+	m_view->history();
+}
+
 void Browser::load(const QUrl& url)
 {
 	m_view->load(url);
