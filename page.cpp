@@ -15,7 +15,7 @@ void Page::setCertificateErrorHandler(CertificateErrorHandler *handler)
 bool Page::certificateError(const QWebEngineCertificateError &err)
 {
 	if (m_certificate_handler) {
-		m_certificate_handler->handleCertificateError(err);
+		return m_certificate_handler->handleCertificateError(err);
 	} else {
 		return QWebEnginePage::certificateError(err);
 	}
