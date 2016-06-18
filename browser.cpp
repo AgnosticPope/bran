@@ -43,7 +43,7 @@ Browser::Browser(QWebEngineProfile *profile, QWidget *parent)
 
 QWebEngineHistory* Browser::history()
 {
-	m_view->history();
+	return m_view->history();
 }
 
 void Browser::load(const QUrl& url)
